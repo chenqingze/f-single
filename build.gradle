@@ -1,0 +1,111 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'checkstyle'
+    id 'org.springframework.boot' version '3.0.0-SNAPSHOT'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id "com.diffplug.spotless" version "6.11.0"
+}
+
+group = 'com.famphony'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springframework.boot:spring-boot-starter-log4j2"
+    implementation 'net.logicsquad:nanocaptcha:1.2'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    modules {
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+/*构建参数配置start*/
+
+
+////////////
+//  Test  //
+////////////
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+////////////
+// Format //
+////////////
+spotless {
+    // enforceCheck !disableSpotlessCheck
+    // ratchetFrom 'origin/main' // only format files which have changed since origin/main
+    java {
+        target fileTree('.') {
+            include '**/src/*/java/**/*.java'
+            exclude '**/build/**'
+            exclude '**/.gradle/**'
+        }
+        toggleOffOn('@formatter:off', '@formatter:on')
+		removeUnusedImports()
+		googleJavaFormat()
+		// importOrderFile("$rootDir/config/spotless/java.importorder")
+		trimTrailingWhitespace()
+		indentWithTabs(2) // or spaces. Takes an integer argument if you don't like 4
+		indentWithSpaces(4)
+		endWithNewline()
+		custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
+		licenseHeaderFile "$rootDir/config/spotless/license"
+	}
+
+	typescript {
+		target 'frontend/web-angular/src/**/*.ts' // you have to set the target manually
+		// tsfmt()    // has its own section below
+		prettier().config(['tabWidth': 4]) // has its own section below
+
+	}
+}
+
+//////////////
+//Checkstyle//
+/////////////
+checkstyle {
+	toolVersion = '10.3.3'
+	// checkstyle配置文件默认路径 ${project.rootDir}/config/checkstyle/checkstyle.xml也可指定其他路径
+	// configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+/*构建参数配置end*/

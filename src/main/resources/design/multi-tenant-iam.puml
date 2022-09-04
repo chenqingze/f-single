@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Tenant
+class Department
+class User
+class Role
+class Permission
+
+Tenant "1" o-- "*" Department : < 组成
+
+Tenant "*" -- "*" User : 雇佣 >
+
+Department "0..1" -- "1" Department : 上级 <
+
+User "*" - "*" Department : > 属于
+
+User "*" -- "*" Role : 拥有 >
+
+Role "*" -- "*" Permission : 拥有 >
+
+
+@enduml
