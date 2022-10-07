@@ -14,9 +14,26 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.application.service.query;
+package com.famphony.single.system.iam.application.dto.request;
+
+import com.famphony.single.system.iam.domain.entity.TargetAttribute;
 
 /**
  * @author ChenQingze
  */
-public class GetPermissionByIdQuery {}
+public record CreatePermissionRequestDto(
+        String permit,
+        String description,
+        Boolean disabled,
+        Long parentId,
+        String uiType,
+        String title,
+        Boolean cached,
+        Boolean shownInMenu,
+        Integer sort,
+        Boolean expandable,
+        Boolean hiddenInBreadcrumb,
+        String path,
+        Boolean externalLink,
+        TargetAttribute target,
+        String icon) {}

@@ -17,6 +17,10 @@ configurations {
     }
 }
 
+ext {
+    mapstructVersion = "1.5.2.Final"
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -30,11 +34,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.springframework.boot:spring-boot-starter-log4j2"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation 'net.logicsquad:nanocaptcha:1.2'
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
+
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
@@ -45,12 +54,21 @@ dependencies {
     }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
 
 /*构建参数配置start*/
-
+/////////////////
+//  mapstruct  //
+/////////////////
+tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+            '-Amapstruct.suppressGeneratorTimestamp=true',
+            '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+            '-Amapstruct.verbose=true',
+            '-Amapstruct.unmappedTargetPolicy=WARN',
+            '-Amapstruct.unmappedSourcePolicy=WARN',
+            '-Amapstruct..defaultComponentModel=spring'
+    ]
+}
 
 ////////////
 //  Test  //

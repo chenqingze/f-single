@@ -14,9 +14,29 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.application.service.command;
+package com.famphony.single.system.iam.application.cqrs.command;
+
+import com.famphony.single.system.iam.domain.entity.TargetAttribute;
 
 /**
  * @author ChenQingze
  */
-public class CreateUserCommand {}
+public class CreatePermissionCommand {
+
+    private String permit;
+    private String description;
+    private Boolean disabled;
+    private Long parentId;
+
+    private String uiType;
+    private String title;
+    private Boolean cached;
+    private Boolean shownInMenu;
+    private Integer sort;
+    private Boolean expandable;
+    private Boolean hiddenInBreadcrumb;
+    private String path;
+    private Boolean externalLink;
+    private TargetAttribute target;
+    private String icon;
+}

@@ -3,4 +3,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.system.iam.application.service.command;
+package com.famphony.single.system.iam.application.cqrs.command;

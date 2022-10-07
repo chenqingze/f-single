@@ -27,6 +27,23 @@
   一个系统，先考虑多租户，又支持多多组织。
   可能按租户分库、schema。
 
+# DDD总结
+
+## 关于 DDD domain service vs application service
+
+Unlike Application Services which get/return Data Transfer Objects, a Domain Service gets/returns
+domain objects (like entities or value types).
+
+A Domain Service can be used by Application Services and other Domain Services, but not directly by
+the presentation layer (application services are for that).
+
+## 关于 DDD CQRS pattern
+
+### CQRS pattern 中command 与 query的区别
+
+write（写）操作需要command 通过调用domain layer 操作.
+read（查询）操作不需要调用domain layer。application layer 的 service 直接调用repository就好.
+
 # hibernate 使用总结
 
 ### 关于jpa @Entity 注解的实体是否等同与domain model entity
@@ -35,8 +52,9 @@
    ,它不等同与领域模型中的entity（domain
    model)。
 2. 从开发的角度讲如果讲逻辑放在领域对象本身上，则可以粗略的视为相等。
-   * 一方面，许多人以人们常说的贫血模型的方式实现域对象：主要是使用 ORM 映射的属性，但域对象本身没有真正的逻辑。他们将逻辑放在域服务中。
-   * 另一方面，领域驱动设计的支持者将逻辑放在领域对象本身上。 无论哪种方式，这些都是您系统中的域对象。JPA
+    * 一方面，许多人以人们常说的贫血模型的方式实现域对象：主要是使用 ORM
+      映射的属性，但域对象本身没有真正的逻辑。他们将逻辑放在域服务中。
+    * 另一方面，领域驱动设计的支持者将逻辑放在领域对象本身上。 无论哪种方式，这些都是您系统中的域对象。JPA
       实体是您使用@Entity、@Column、@ManyToOne 等注释的类。这是一种实现域对象的方法。如上所述，你可以决定将域逻辑放在对象本身上，还是领域服务上这都无关紧要。
 
 ### 关于业务对象的操作：

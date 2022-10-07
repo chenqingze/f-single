@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.application.service.command;
+package com.famphony.single.system.iam.application.cqrs.query;
 
 /**
  * @author ChenQingze
  */
-public class UserCommandHandler {}
+public class GetPermissionByIdQuery {}
