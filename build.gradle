@@ -3,7 +3,7 @@ plugins {
     id 'idea'
     id 'checkstyle'
     id 'org.springframework.boot' version '3.0.0-SNAPSHOT'
-    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id "com.diffplug.spotless" version "6.11.0"
 }
 
@@ -18,7 +18,7 @@ configurations {
 }
 
 ext {
-    mapstructVersion = "1.5.2.Final"
+    mapstructVersion = "1.5.3.Final"
 }
 
 repositories {
@@ -34,24 +34,26 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.springframework.boot:spring-boot-starter-log4j2"
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation 'net.logicsquad:nanocaptcha:1.2'
-
-    runtimeOnly 'org.postgresql:postgresql'
-
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
         }
     }
+
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation 'net.logicsquad:nanocaptcha:1.2'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+
 }
 
 
@@ -66,7 +68,7 @@ tasks.withType(JavaCompile) {
             '-Amapstruct.verbose=true',
             '-Amapstruct.unmappedTargetPolicy=WARN',
             '-Amapstruct.unmappedSourcePolicy=WARN',
-            '-Amapstruct..defaultComponentModel=spring'
+            '-Amapstruct.defaultComponentModel=default'
     ]
 }
 
