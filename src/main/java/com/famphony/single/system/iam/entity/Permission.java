@@ -32,12 +32,14 @@ import java.util.Set;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
+import org.hibernate.envers.Audited;
 
 /**
  * 权限.
  *
  * @author ChenQingze
  */
+@Audited
 @Entity
 public class Permission extends BaseEntity {
 

@@ -36,12 +36,14 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.envers.Audited;
 
 /**
  * 用户基本信息表:记录了整个SaaS平台的用户基本信息。 用户注册后是不属于具体某个组织，一个用户可以加入多个组织.
  *
  * @author ChenQingze
  */
+@Audited
 @Entity
 public class User extends BaseEntity {
 

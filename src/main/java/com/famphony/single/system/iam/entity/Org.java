@@ -29,12 +29,14 @@ import java.util.Objects;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
+import org.hibernate.envers.Audited;
 
 /**
  * 组织.
  *
  * @author ChenQingze
  */
+@Audited
 @Entity
 public class Org extends BaseEntity {
 

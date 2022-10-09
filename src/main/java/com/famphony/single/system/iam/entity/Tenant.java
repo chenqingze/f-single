@@ -27,6 +27,7 @@ import java.util.Objects;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.envers.Audited;
 
 /**
  * 租户信息.
@@ -35,6 +36,7 @@ import org.hibernate.annotations.NaturalId;
  *
  * @author ChenQingze
  */
+@Audited
 @Entity
 public class Tenant extends BaseEntity {
 

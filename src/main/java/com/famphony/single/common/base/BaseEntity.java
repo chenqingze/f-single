@@ -16,14 +16,11 @@
 
 package com.famphony.single.common.base;
 
-import com.famphony.single.system.iam.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
@@ -57,18 +54,16 @@ public abstract class BaseEntity implements Serializable {
     private LocalDateTime createdAt;
 
     @CreatedBy
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
-    private User createdBy;
+    private String createdBy;
 
     @LastModifiedDate
     @JoinColumn(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @LastModifiedBy
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by")
-    private User updatedBy;
+    private String updatedBy;
 
     @Version private Long version;
 
@@ -93,11 +88,11 @@ public abstract class BaseEntity implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public User getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -109,11 +104,11 @@ public abstract class BaseEntity implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public User getUpdatedBy() {
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(User updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 

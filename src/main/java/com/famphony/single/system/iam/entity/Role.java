@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
+import org.hibernate.envers.Audited;
 
 /**
  * 角色:权限组（role:permission group）.
@@ -37,6 +38,7 @@ import org.hibernate.annotations.Comment;
 // @SQLDelete(sql = "UPDATE role SET deleted = true WHERE id = ? AND version = ?", check =
 // ResultCheckStyle.COUNT)
 // @Where(clause = "deleted <> 'true'")
+@Audited
 @Entity
 public class Role extends BaseEntity {
 
