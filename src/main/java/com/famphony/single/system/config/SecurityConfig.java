@@ -26,9 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -40,7 +38,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig implements WebSecurityCustomizer {
+public class SecurityConfig {
 
     private final SecurityUserDetailsService securityUserDetailsService;
 
@@ -70,34 +68,29 @@ public class SecurityConfig implements WebSecurityCustomizer {
             .authorizeRequests(
                 authorize ->
                     authorize.antMatchers("/logout").permitAll()
+                        .antMatchers(
+                            HttpMethod.GET,
+                            "/",
+                            "/zh/**/*.*",
+                            "/en/**/*.*",
+                            "/**/index.html",
+                            "/**/login",
+                            "/**/*.js",
+                            "/**/*.css",
+                            "/**/*.ico",
+                            "/**/*.bmp",
+                            "/**/*.jpeg",
+                            "/**/*.jpg",
+                            "/**/*.png",
+                            "/**/*.ttf",
+                            "/**/*.eot",
+                            "/**/*.svg",
+                            "/**/*.woff",
+                            "/**/*.woff2").permitAll()
                         .anyRequest()
                         .authenticated() // for prod
             );
         // @formatter:on
         return http.build();
-    }
-
-    @Override
-    public void customize(WebSecurity web) {
-        web.ignoring()
-                .antMatchers(
-                        HttpMethod.GET,
-                        "/",
-                        "/zh/**/*.*",
-                        "/en/**/*.*",
-                        "/**/index.html",
-                        "/**/login",
-                        "/**/*.js",
-                        "/**/*.css",
-                        "/**/*.ico",
-                        "/**/*.bmp",
-                        "/**/*.jpeg",
-                        "/**/*.jpg",
-                        "/**/*.png",
-                        "/**/*.ttf",
-                        "/**/*.eot",
-                        "/**/*.svg",
-                        "/**/*.woff",
-                        "/**/*.woff2");
     }
 }

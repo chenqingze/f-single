@@ -27,6 +27,8 @@
   一个系统，先考虑多租户，又支持多多组织。
   可能按租户分库、schema。
 
+Multi-Factor Authentication (MFA).
+
 # DDD总结
 
 ## 关于 DDD domain service vs application service
@@ -88,3 +90,8 @@ javax.persistence.validation.group.pre-persist
 javax.persistence.validation.group.pre-update
 javax.persistence.validation.group.pre-remove
 [参考](https://thorben-janssen.com/hibernate-tips-how-to-perform-different-validations-for-persist-and-update/)
+
+### 关于删除
+
+尽量不要使用额外的删除字段处理相应的逻辑删除，即使使用额外的列处理逻辑删除，也要定期将已删除的记录移动到记录删除的表里
+推荐直接使用额外的表来记录删除的记录

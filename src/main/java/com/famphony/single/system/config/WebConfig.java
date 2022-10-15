@@ -44,11 +44,4 @@ public class WebConfig implements WebMvcConfigurer {
              // .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)));
         // @formatter:on
     }
-
-    //    @Override
-    //    public void addViewControllers(ViewControllerRegistry registry) {
-    //        registry.addViewController("/").setViewName("index.html");
-    //        registry.addViewController("/{path:[^\\.]*}").setViewName("forward:/");
-    //    }
-
 }
