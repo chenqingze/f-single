@@ -16,7 +16,7 @@
 
 package com.famphony.single.system.iam.security.authentication;
 
-import com.famphony.single.system.iam.security.userdetails.MobileSmsUserDetailsService;
+import com.famphony.single.system.iam.security.userdetails.SmsOtpUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -38,57 +38,57 @@ import org.springframework.util.Assert;
  *
  * @author ChenQingze
  */
-public class MobileSmsAuthenticationProvider
+public class SmsOtpAuthenticationProvider
         implements AuthenticationProvider, InitializingBean, MessageSourceAware {
 
-    private final Logger logger = LoggerFactory.getLogger(MobileSmsAuthenticationProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(SmsOtpAuthenticationProvider.class);
 
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
-    private final MobileSmsUserDetailsService mobileSmsUserDetailsService;
+    private final SmsOtpUserDetailsService smsOtpUserDetailsService;
 
     private final UserDetailsChecker postAuthenticationChecks = new AccountStatusUserDetailsChecker();
 
-    public MobileSmsAuthenticationProvider(MobileSmsUserDetailsService mobileSmsUserDetailsService) {
-        this.mobileSmsUserDetailsService = mobileSmsUserDetailsService;
+    public SmsOtpAuthenticationProvider(SmsOtpUserDetailsService smsOtpUserDetailsService) {
+        this.smsOtpUserDetailsService = smsOtpUserDetailsService;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Assert.isInstanceOf(
-                MobileSmsAuthenticationToken.class,
+                SmsOtpAuthenticationToken.class,
                 authentication,
                 messages.getMessage(
                         "AbstractUserDetailsAuthenticationProvider.onlySupports",
-                        "Only MobileSmsAuthenticationToken is supported"));
-        final MobileSmsAuthenticationToken mobileSmsAuthenticationToken =
-                (MobileSmsAuthenticationToken) authentication;
+                        "Only SmsOtpAuthenticationToken is supported"));
+        final SmsOtpAuthenticationToken smsOtpAuthenticationToken =
+                (SmsOtpAuthenticationToken) authentication;
 
-        final String phoneNumber = (String) mobileSmsAuthenticationToken.getPrincipal();
-        final String smsCode = (String) mobileSmsAuthenticationToken.getCredentials();
+        final String phoneNumber = (String) smsOtpAuthenticationToken.getPrincipal();
+        final String smsCode = (String) smsOtpAuthenticationToken.getCredentials();
 
-        if (!mobileSmsUserDetailsService.consumeSmsCode(phoneNumber, smsCode)) {
+        if (!smsOtpUserDetailsService.consumeSmsCode(phoneNumber, smsCode)) {
             throw new BadCredentialsException(
                     messages.getMessage(
                             "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
 
-        UserDetails user = mobileSmsUserDetailsService.loadUserByMobile(phoneNumber);
+        UserDetails user = smsOtpUserDetailsService.loadUserByMobile(phoneNumber);
 
         postAuthenticationChecks.check(user);
         this.logger.debug("Authenticated user");
-        return new MobileSmsAuthenticationToken(user);
+        return new SmsOtpAuthenticationToken(user);
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
 
-        return (MobileSmsAuthenticationToken.class.isAssignableFrom(authentication));
+        return (SmsOtpAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(this.messages, "A message source must be set");
-        Assert.notNull(this.mobileSmsUserDetailsService, "A mobileSmsUserDetailsService must be set.");
+        Assert.notNull(this.smsOtpUserDetailsService, "A smsOtpUserDetailsService must be set.");
         Assert.notNull(this.postAuthenticationChecks, "A postAuthenticationChecks must be set.");
     }
 

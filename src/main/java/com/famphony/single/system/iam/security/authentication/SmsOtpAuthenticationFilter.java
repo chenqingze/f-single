@@ -25,6 +25,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -34,7 +35,7 @@ import org.springframework.util.Assert;
  *
  * @author ChenQingze
  */
-public class MobileSmsAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class SmsOtpAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public static final String SPRING_SECURITY_FORM_PHONE_NUMBER_KEY = "phoneNumber";
     public static final String SPRING_SECURITY_FORM_SMS_CODE_KEY = "smsCode";
@@ -48,15 +49,21 @@ public class MobileSmsAuthenticationFilter extends AbstractAuthenticationProcess
 
     private boolean postOnly = true;
 
-    public MobileSmsAuthenticationFilter() {
+    public SmsOtpAuthenticationFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
     }
 
-    public MobileSmsAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public SmsOtpAuthenticationFilter(
+            AuthenticationManager authenticationManager, SessionAuthenticationStrategy sessionStrategy) {
+        super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
+        super.setSessionAuthenticationStrategy(sessionStrategy);
+    }
+
+    public SmsOtpAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
     }
 
-    public MobileSmsAuthenticationFilter(
+    public SmsOtpAuthenticationFilter(
             RequestMatcher requestMatcher, AuthenticationManager authenticationManager) {
         super(requestMatcher, authenticationManager);
     }
@@ -76,8 +83,8 @@ public class MobileSmsAuthenticationFilter extends AbstractAuthenticationProcess
         String smsCode = request.getParameter(smsCodeParameter);
         smsCode = (smsCode != null) ? smsCode.trim() : "";
 
-        final MobileSmsAuthenticationToken authRequest =
-                new MobileSmsAuthenticationToken(phoneNumber, smsCode);
+        final SmsOtpAuthenticationToken authRequest =
+                new SmsOtpAuthenticationToken(phoneNumber, smsCode);
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 
         return this.getAuthenticationManager().authenticate(authRequest);

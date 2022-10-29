@@ -22,4 +22,4 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @author ChenQingze
  */
 public interface SecurityUserDetailsService
-        extends UserDetailsService, MobileSmsUserDetailsService, EmailCodeUserDetailsService {}
+        extends UserDetailsService, SmsOtpUserDetailsService, EmailOtpUserDetailsService {}

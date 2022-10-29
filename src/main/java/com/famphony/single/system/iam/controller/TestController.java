@@ -19,6 +19,7 @@ package com.famphony.single.system.iam.controller;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +34,22 @@ public class TestController {
     public Map<String, String> testInfo() {
         Map<String, String> model = new HashMap<>();
         model.put("data", "测试信息。。。天下无敌");
+        return model;
+    }
+
+    @GetMapping("/getTest")
+    @ResponseBody
+    public Map<String, String> getTestInfo() {
+        Map<String, String> model = new HashMap<>();
+        model.put("test get", "测试信息。。。天下无敌");
+        return model;
+    }
+
+    @PostMapping("/postTest")
+    @ResponseBody
+    public Map<String, String> postTestInfo() {
+        Map<String, String> model = new HashMap<>();
+        model.put("test post", "测试信息。。。天下无敌");
         return model;
     }
 }

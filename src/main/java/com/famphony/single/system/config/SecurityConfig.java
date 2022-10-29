@@ -18,8 +18,8 @@ package com.famphony.single.system.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import com.famphony.single.system.iam.security.authentication.MobileSmsAuthenticationFilter;
-import com.famphony.single.system.iam.security.authentication.MobileSmsAuthenticationProvider;
+import com.famphony.single.system.iam.security.authentication.SmsOtpAuthenticationFilter;
+import com.famphony.single.system.iam.security.authentication.SmsOtpAuthenticationProvider;
 import com.famphony.single.system.iam.security.userdetails.SecurityUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +29,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 /**
@@ -59,12 +60,12 @@ public class SecurityConfig {
         // @formatter:off
         http.httpBasic(withDefaults())
             .userDetailsService(securityUserDetailsService)
-            .sessionManagement(session -> session.maximumSessions(1))
+            .sessionManagement(session -> session.sessionFixation().changeSessionId().maximumSessions(1))
             .logout(logout->logout.deleteCookies("JSESSIONID"))
             // 使用cookie的时候开启此配置： allows angular to read XSRF cookie
             .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-            .authenticationProvider(new MobileSmsAuthenticationProvider(securityUserDetailsService))
-            .addFilterAfter(new MobileSmsAuthenticationFilter(http.getSharedObject(AuthenticationManager.class)),UsernamePasswordAuthenticationFilter.class)
+            .authenticationProvider(new SmsOtpAuthenticationProvider(securityUserDetailsService))
+            .addFilterAfter(new SmsOtpAuthenticationFilter(http.getSharedObject(AuthenticationManager.class),http.getSharedObject(SessionAuthenticationStrategy.class)),UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests(
                 authorize ->
                     authorize.antMatchers("/logout").permitAll()

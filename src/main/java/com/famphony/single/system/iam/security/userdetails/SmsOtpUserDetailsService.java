@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 /**
  * @author ChenQingze
  */
-public interface MobileSmsUserDetailsService {
+public interface SmsOtpUserDetailsService {
     boolean consumeSmsCode(String mobile, String smsCode);
 
     UserDetails loadUserByMobile(String mobile) throws UsernameNotFoundException;

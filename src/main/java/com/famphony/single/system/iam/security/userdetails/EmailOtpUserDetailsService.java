@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 /**
  * @author ChenQingze
  */
-public interface EmailCodeUserDetailsService {
+public interface EmailOtpUserDetailsService {
     boolean consumeEmailCode(String email, String code);
 
     UserDetails loadUserByEmail(String username) throws UsernameNotFoundException;

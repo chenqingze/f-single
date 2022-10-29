@@ -25,20 +25,20 @@ import org.springframework.util.Assert;
  *
  * @author ChenQingze
  */
-public class MobileSmsAuthenticationToken extends AbstractAuthenticationToken {
+public class SmsOtpAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principal;
 
     private Object credentials;
 
-    public MobileSmsAuthenticationToken(String phoneNumber, String smsCode) {
+    public SmsOtpAuthenticationToken(String phoneNumber, String smsCode) {
         super(null);
         this.principal = phoneNumber;
         this.credentials = smsCode;
         setAuthenticated(false);
     }
 
-    public MobileSmsAuthenticationToken(UserDetails userDetails) {
+    public SmsOtpAuthenticationToken(UserDetails userDetails) {
         super(userDetails.getAuthorities());
         this.principal = userDetails;
     }
