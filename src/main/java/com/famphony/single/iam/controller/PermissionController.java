@@ -14,13 +14,13 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.controller;
+package com.famphony.single.iam.controller;
 
-import com.famphony.single.system.iam.dto.request.CreatePermissionReq;
-import com.famphony.single.system.iam.dto.request.UpdatePermissionReq;
-import com.famphony.single.system.iam.dto.response.PermissionResp;
-import com.famphony.single.system.iam.entity.Permission;
-import com.famphony.single.system.iam.service.PermissionService;
+import com.famphony.single.iam.dto.request.CreatePermissionReq;
+import com.famphony.single.iam.dto.request.UpdatePermissionReq;
+import com.famphony.single.iam.dto.response.PermissionResp;
+import com.famphony.single.iam.entity.Permission;
+import com.famphony.single.iam.service.PermissionService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;

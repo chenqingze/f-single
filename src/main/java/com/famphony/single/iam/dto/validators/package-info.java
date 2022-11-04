@@ -3,4 +3,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.system.iam.dto.validators;
+package com.famphony.single.iam.dto.validators;

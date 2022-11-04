@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.captcha.sms;
+package com.famphony.commons.captcha.sms;
 
 import java.io.IOException;
 import javax.servlet.FilterChain;

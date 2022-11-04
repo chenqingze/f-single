@@ -14,12 +14,12 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.security.userdetails;
+package com.famphony.single.iam.security.userdetails;
 
 import com.famphony.commons.security.service.SecurityUserDetailsService;
 import com.famphony.commons.security.userdetails.SecurityUserDetails;
-import com.famphony.single.system.iam.entity.User;
-import com.famphony.single.system.iam.service.UserService;
+import com.famphony.single.iam.entity.User;
+import com.famphony.single.iam.service.UserService;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

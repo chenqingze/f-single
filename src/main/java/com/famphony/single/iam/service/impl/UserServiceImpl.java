@@ -14,18 +14,17 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.service.impl;
+package com.famphony.single.iam.service.impl;
 
-import static com.famphony.single.system.iam.exception.BusinessExceptionCode.USER_NOT_FOUND;
-
-import com.famphony.single.system.iam.dto.assembler.UserAssembler;
-import com.famphony.single.system.iam.dto.request.CreateUserReq;
-import com.famphony.single.system.iam.dto.request.UpdateUserPasswordReq;
-import com.famphony.single.system.iam.dto.request.UpdateUserReq;
-import com.famphony.single.system.iam.dto.response.UserResp;
-import com.famphony.single.system.iam.entity.User;
-import com.famphony.single.system.iam.repository.UserRepository;
-import com.famphony.single.system.iam.service.UserService;
+import com.famphony.single.iam.dto.assembler.UserAssembler;
+import com.famphony.single.iam.dto.request.CreateUserReq;
+import com.famphony.single.iam.dto.request.UpdateUserPasswordReq;
+import com.famphony.single.iam.dto.request.UpdateUserReq;
+import com.famphony.single.iam.dto.response.UserResp;
+import com.famphony.single.iam.entity.User;
+import com.famphony.single.iam.exception.BusinessExceptionCode;
+import com.famphony.single.iam.repository.UserRepository;
+import com.famphony.single.iam.service.UserService;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +57,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(
                         () ->
                                 new ResponseStatusException(
-                                        HttpStatus.NOT_FOUND, String.format(USER_NOT_FOUND.getMsg(), id)));
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(BusinessExceptionCode.USER_NOT_FOUND.getMsg(), id)));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
             return UserAssembler.INSTANCE.userToUserResp(userRepository.save(updateUser));
         }
         throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, String.format(USER_NOT_FOUND.getMsg(), id));
+                HttpStatus.NOT_FOUND, String.format(BusinessExceptionCode.USER_NOT_FOUND.getMsg(), id));
     }
 
     @Override
@@ -90,7 +90,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(
                         () ->
                                 new ResponseStatusException(
-                                        HttpStatus.NOT_FOUND, String.format(USER_NOT_FOUND.getMsg(), id)));
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(BusinessExceptionCode.USER_NOT_FOUND.getMsg(), id)));
     }
 
     @Override

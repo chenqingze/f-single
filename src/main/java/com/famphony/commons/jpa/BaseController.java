@@ -14,9 +14,10 @@
  * the License.
  */
 
-package com.famphony.commons.base;
+package com.famphony.commons.jpa;
 
-import com.famphony.single.system.iam.exception.EntityNotFoundException;
+import static com.famphony.single.iam.exception.BusinessExceptionCode.ENTITY_NOT_FOUND;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Map;
@@ -36,10 +37,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * @author ChenQingze
+ * @deprecated
  */
+@Deprecated
 public class BaseController<T extends BaseEntity, R extends JpaRepository<T, Long>> {
 
     private final R repository;
@@ -60,8 +64,9 @@ public class BaseController<T extends BaseEntity, R extends JpaRepository<T, Lon
                 .findById(id)
                 .orElseThrow(
                         () ->
-                                new EntityNotFoundException(
-                                        String.format("%s %s not found", getTClass().getSimpleName(), id)));
+                                new ResponseStatusException(
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(ENTITY_NOT_FOUND.getMsg(), getTClass().getSimpleName(), id)));
     }
 
     /**
@@ -130,8 +135,9 @@ public class BaseController<T extends BaseEntity, R extends JpaRepository<T, Lon
                         })
                 .orElseThrow(
                         () ->
-                                new EntityNotFoundException(
-                                        String.format("%s %s not found", getTClass().getSimpleName(), id)));
+                                new ResponseStatusException(
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(ENTITY_NOT_FOUND.getMsg(), getTClass().getSimpleName(), id)));
     }
 
     /**

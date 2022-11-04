@@ -2,8 +2,8 @@ plugins {
     id 'java'
     id 'idea'
     id 'checkstyle'
-    id 'org.springframework.boot' version '3.0.0-SNAPSHOT'
-    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id "com.diffplug.spotless" version "6.11.0"
 }
 
@@ -18,9 +18,11 @@ configurations {
 }
 
 ext {
-    hibernateEnversVersion = '6.1.3.Final'
+    springBootVersion = '2.7.5'
+    springDependencyManagementVersion = '1.0.15.RELEASE'
+    hibernateEnversVersion = '5.6.12.Final'
     mapstructVersion = '1.5.3.Final'
-    nanocaptchaVersion ='1.3'
+    nanocaptchaVersion = '1.3'
 }
 
 repositories {
@@ -41,7 +43,7 @@ dependencies {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
         }
     }
-    implementation "org.hibernate.orm:hibernate-envers:${hibernateEnversVersion}"
+    implementation "org.hibernate:hibernate-envers:${hibernateEnversVersion}"
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "net.logicsquad:nanocaptcha:${nanocaptchaVersion}"
 
@@ -106,12 +108,12 @@ spotless {
 		licenseHeaderFile "$rootDir/config/spotless/license"
 	}
 
-	typescript {
-		target 'frontend/web-angular/src/**/*.ts' // you have to set the target manually
-		// tsfmt()    // has its own section below
-		prettier().config(['tabWidth': 4]) // has its own section below
-
-	}
+//	typescript {
+//		target 'frontend/web-angular/src/**/*.ts' // you have to set the target manually
+//		// tsfmt()    // has its own section below
+//		prettier().config(['tabWidth': 4]) // has its own section below
+//
+//	}
 }
 
 //////////////
@@ -124,10 +126,5 @@ checkstyle {
 }
 
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
 
 /*构建参数配置end*/

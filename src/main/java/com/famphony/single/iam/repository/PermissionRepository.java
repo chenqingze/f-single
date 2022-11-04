@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.repository;
+package com.famphony.single.iam.repository;
 
-import com.famphony.single.system.iam.entity.Permission;
+import com.famphony.single.iam.entity.Permission;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

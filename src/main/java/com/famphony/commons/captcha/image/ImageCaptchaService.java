@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.captcha.image;
+package com.famphony.commons.captcha.image;
 
 import com.famphony.commons.captcha.CaptchaService;
 import net.logicsquad.nanocaptcha.image.ImageCaptcha;

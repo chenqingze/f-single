@@ -3,4 +3,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.system.config;
+package com.famphony.single.config;

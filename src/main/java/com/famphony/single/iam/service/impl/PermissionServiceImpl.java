@@ -14,17 +14,16 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.service.impl;
+package com.famphony.single.iam.service.impl;
 
-import static com.famphony.single.system.iam.exception.BusinessExceptionCode.PERMISSION_NOT_FOUND;
-
-import com.famphony.single.system.iam.dto.assembler.PermissionAssembler;
-import com.famphony.single.system.iam.dto.request.CreatePermissionReq;
-import com.famphony.single.system.iam.dto.request.UpdatePermissionReq;
-import com.famphony.single.system.iam.dto.response.PermissionResp;
-import com.famphony.single.system.iam.entity.Permission;
-import com.famphony.single.system.iam.repository.PermissionRepository;
-import com.famphony.single.system.iam.service.PermissionService;
+import com.famphony.single.iam.dto.assembler.PermissionAssembler;
+import com.famphony.single.iam.dto.request.CreatePermissionReq;
+import com.famphony.single.iam.dto.request.UpdatePermissionReq;
+import com.famphony.single.iam.dto.response.PermissionResp;
+import com.famphony.single.iam.entity.Permission;
+import com.famphony.single.iam.exception.BusinessExceptionCode;
+import com.famphony.single.iam.repository.PermissionRepository;
+import com.famphony.single.iam.service.PermissionService;
 import java.awt.print.Book;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -56,7 +55,8 @@ public class PermissionServiceImpl implements PermissionService {
                 .orElseThrow(
                         () ->
                                 new ResponseStatusException(
-                                        HttpStatus.NOT_FOUND, String.format(PERMISSION_NOT_FOUND.getMsg(), id)));
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(BusinessExceptionCode.PERMISSION_NOT_FOUND.getMsg(), id)));
     }
 
     @Override
@@ -111,7 +111,8 @@ public class PermissionServiceImpl implements PermissionService {
                 .orElseThrow(
                         () ->
                                 new ResponseStatusException(
-                                        HttpStatus.NOT_FOUND, String.format(PERMISSION_NOT_FOUND.getMsg(), id)));
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(BusinessExceptionCode.PERMISSION_NOT_FOUND.getMsg(), id)));
     }
 
     @Override

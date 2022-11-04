@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.entity;
+package com.famphony.single.iam.entity;
 
 /**
  * 租户认证信息.

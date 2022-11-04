@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.dto.request;
+package com.famphony.single.iam.dto.request;
 
 /**
  * @author ChenQingze

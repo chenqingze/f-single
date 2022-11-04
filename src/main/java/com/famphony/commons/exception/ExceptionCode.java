@@ -14,36 +14,16 @@
  * the License.
  */
 
-package com.famphony.single.commons.exception;
-
-import java.util.StringJoiner;
+package com.famphony.commons.exception;
 
 /**
  * @author ChenQingze
  */
-public enum ExceptionCode {
-    REAL_NAME_CANT_BE_NULL(1000, "姓名不能为空！");
-    private final int code;
-    private final String msg;
+public interface ExceptionCode {
 
-    ExceptionCode(int code, String msg) {
-        this.code = code;
-        this.msg = msg;
-    }
+    int getCode();
 
-    public int getCode() {
-        return code;
-    }
+    String getMsg();
 
-    public String getMsg() {
-        return msg;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", ExceptionCode.class.getSimpleName() + "[", "]")
-                .add("code=" + code)
-                .add("msg='" + msg + "'")
-                .toString();
-    }
+    String toString();
 }

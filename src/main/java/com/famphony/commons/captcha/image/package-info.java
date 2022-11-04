@@ -3,4 +3,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.commons.captcha.image;
+package com.famphony.commons.captcha.image;

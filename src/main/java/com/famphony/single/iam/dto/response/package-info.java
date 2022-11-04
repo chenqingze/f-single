@@ -9,4 +9,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.system.iam.dto.response;
+package com.famphony.single.iam.dto.response;

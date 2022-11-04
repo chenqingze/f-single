@@ -40,4 +40,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.system.iam;
+package com.famphony.single.iam;

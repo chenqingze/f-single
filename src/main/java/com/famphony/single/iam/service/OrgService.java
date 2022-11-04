@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.service;
+package com.famphony.single.iam.service;
 
 /**
  * @author ChenQingze

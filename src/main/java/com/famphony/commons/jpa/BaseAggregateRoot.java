@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.commons.base;
+package com.famphony.commons.jpa;
 
 import java.util.ArrayList;
 import java.util.Collection;

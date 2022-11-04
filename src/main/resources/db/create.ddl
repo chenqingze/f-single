@@ -22674,50 +22674,194 @@ create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -22747,58 +22891,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -22828,58 +23122,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -22909,58 +23353,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -22990,58 +23584,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23071,58 +23815,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23152,58 +24046,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23233,58 +24277,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23314,58 +24508,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23395,58 +24739,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23476,58 +24970,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23557,58 +25201,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23638,58 +25432,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23719,58 +25663,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23800,58 +25894,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23881,58 +26125,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -23962,58 +26356,208 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24043,8 +26587,14 @@ alter table if exists "role_permission" add constraint "FK28fyyigl7pt1rfdf7o736v
 alter table if exists "role_permission" add constraint "FKp9q4vdsx41116ra1enydewgre" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24052,58 +26602,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "created_by" bigint not null, "updated_by" bigint, "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "description" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "created_by" bigint not null, "updated_by" bigint, "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "updated_at" timestamp(6), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "created_by" bigint not null, "updated_by" bigint, "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "updated_at" timestamp(6),
+    "version"    bigint,
+    "name"       varchar(255),
+    "created_by" bigint not null,
+    "updated_by" bigint,
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "updated_at"           timestamp(6),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "created_by"           bigint       not null,
+    "updated_by"           bigint,
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "updated_at"  timestamp(6),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    "created_by"  bigint not null,
+    "updated_by"  bigint,
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "updated_at"   timestamp(6),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "created_by"   bigint not null,
+    "updated_by"   bigint,
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "updated_at"    timestamp(6),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "created_by"    bigint       not null,
+    "updated_by"    bigint,
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24140,8 +26926,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24149,58 +26941,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24225,8 +27253,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24234,58 +27268,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24310,8 +27580,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24319,58 +27595,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24395,8 +27907,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24404,58 +27922,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24480,8 +28234,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24489,58 +28249,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24565,8 +28561,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24574,58 +28576,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24650,8 +28888,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24659,58 +28903,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24735,8 +29215,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24744,58 +29230,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24820,8 +29542,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24829,58 +29557,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24905,8 +29869,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24914,58 +29884,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -24990,8 +30196,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -24999,58 +30211,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25075,8 +30523,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25084,58 +30538,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25160,8 +30850,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25169,58 +30865,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25245,8 +31177,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25254,58 +31192,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25330,8 +31504,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25339,58 +31519,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25415,8 +31831,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25424,58 +31846,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25500,8 +32158,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25509,58 +32173,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25585,8 +32485,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25594,58 +32500,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25670,8 +32812,14 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
 create sequence "group_seq" start with 1 increment by 50;
 create sequence "org_seq" start with 1 increment by 50;
 create sequence "permission_seq" start with 1 increment by 50;
@@ -25679,58 +32827,294 @@ create sequence "revinfo_seq" start with 1 increment by 50;
 create sequence "role_seq" start with 1 increment by 50;
 create sequence "tenant_seq" start with 1 increment by 50;
 create sequence "user_seq" start with 1 increment by 50;
-create table "group" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "name" varchar(255), primary key ("id"));
-comment on column "group"."name" is '用户组名称';
-create table "org" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "enabled" boolean default true, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("id"));
-comment on column "org"."description" is '组织描述';
-comment on column "org"."enabled" is '是否启用';
-comment on column "org"."landline" is '座机/电话';
-comment on column "org"."level" is '组织层级';
-comment on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
-comment on column "org"."sort" is '排序';
-comment on column "org"."parent_id" is '上级组织';
-comment on column "org"."tenant_id" is '所属租户';
-comment on column "org"."user_id" is '组织负责人';
-create table "permission" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "disabled" boolean default false, "permit" varchar(255) not null, "cached" boolean default false, "expandable" boolean default false, "external_link" boolean default false, "hidden_in_breadcrumb" boolean default false, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean default false, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("id"));
-comment on column "permission"."description" is '权限描述';
-comment on column "permission"."disabled" is '是否停用';
-comment on column "permission"."permit" is '权限标识符';
-comment on column "permission"."cached" is '是否支持路由器复用/是否缓存';
-comment on column "permission"."expandable" is '是否有子节点/是否可展开';
-comment on column "permission"."external_link" is '是否外部链接';
-comment on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
-comment on column "permission"."icon" is '图标';
-comment on column "permission"."path" is '请求地址/路由路径/外部链接';
-comment on column "permission"."shown_in_menu" is '是否在菜单中显示';
-comment on column "permission"."sort" is '排序';
-comment on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
-comment on column "permission"."title" is '页面显示标题/菜单显示标题';
-comment on column "permission"."ui_type" is 'UI类型';
-create table "revinfo" ("rev" integer not null, "revtstmp" bigint, primary key ("rev"));
-create table "role" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "description" varchar(255), "name" varchar(255), primary key ("id"));
-comment on column "role"."description" is '角色描述';
-comment on column "role"."name" is '角色名称';
-create table "tenant" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("id"));
-comment on column "tenant"."name" is '租户名称/机构名称';
-comment on column "tenant"."user_id" is '组织负责人';
-create table "user" ("id" bigint not null, "created_at" timestamp(6), "created_by" varchar(255), "updated_at" timestamp(6), "updated_by" varchar(255), "version" bigint, "email" varchar(255), "enabled" boolean default true, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255) not null, "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("id"));
-comment on column "user"."email" is '邮箱';
-comment on column "user"."enabled" is '账号状态是否启用';
-comment on column "user"."gender" is '用户性别';
-comment on column "user"."mobile" is '手机号码';
-comment on column "user"."password_hash" is '登录密码';
-comment on column "user"."real_name" is '真实姓名';
-comment on column "user"."username" is '用户名/账号名';
-comment on column "user"."org_id" is '组织';
-create table "org_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "enabled" boolean, "landline" varchar(255), "level" integer, "name" varchar(255), "sort" integer, "parent_id" bigint, "tenant_id" bigint, "user_id" bigint, primary key ("rev", "id"));
-create table "permission_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "disabled" boolean, "permit" varchar(255), "cached" boolean, "expandable" boolean, "external_link" boolean, "hidden_in_breadcrumb" boolean, "icon" varchar(255), "path" varchar(255), "shown_in_menu" boolean, "sort" integer, "target" varchar(255), "title" varchar(255), "ui_type" varchar(255), "parent_id" bigint, primary key ("rev", "id"));
-create table "role_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "description" varchar(255), "name" varchar(255), primary key ("rev", "id"));
-create table "role_permission" ("role_id" bigint not null, "permission_id" bigint not null, primary key ("role_id", "permission_id"));
-create table "role_permission_aud" ("rev" integer not null, "role_id" bigint not null, "permission_id" bigint not null, "revtype" smallint, primary key ("rev", "role_id", "permission_id"));
-create table "tenant_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "city" varchar(255), "country" varchar(255), "county" varchar(255), "province" varchar(255), "area_code" varchar(255), "country_code" varchar(255), "line_number" varchar(255), "name" varchar(255), "user_id" bigint, primary key ("rev", "id"));
-create table "user_aud" ("id" bigint not null, "rev" integer not null, "revtype" smallint, "email" varchar(255), "enabled" boolean, "gender" varchar(255), "mobile" varchar(255), "password_hash" varchar(255), "real_name" varchar(255), "username" varchar(255), "org_id" bigint, primary key ("rev", "id"));
-create table "user_role" ("user_id" bigint not null, "role_id" bigint not null, primary key ("user_id", "role_id"));
-create table "user_role_aud" ("rev" integer not null, "user_id" bigint not null, "role_id" bigint not null, "revtype" smallint, primary key ("rev", "user_id", "role_id"));
+create table "group"
+(
+    "id"         bigint not null,
+    "created_at" timestamp(6),
+    "created_by" varchar(255),
+    "updated_at" timestamp(6),
+    "updated_by" varchar(255),
+    "version"    bigint,
+    "name"       varchar(255),
+    primary key ("id")
+);
+comment
+on column "group"."name" is '用户组名称';
+create table "org"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "enabled"     boolean default true,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("id")
+);
+comment
+on column "org"."description" is '组织描述';
+comment
+on column "org"."enabled" is '是否启用';
+comment
+on column "org"."landline" is '座机/电话';
+comment
+on column "org"."level" is '组织层级';
+comment
+on column "org"."name" is '组织名称,同一组织机构内部门名称不能重复';
+comment
+on column "org"."sort" is '排序';
+comment
+on column "org"."parent_id" is '上级组织';
+comment
+on column "org"."tenant_id" is '所属租户';
+comment
+on column "org"."user_id" is '组织负责人';
+create table "permission"
+(
+    "id"                   bigint       not null,
+    "created_at"           timestamp(6),
+    "created_by"           varchar(255),
+    "updated_at"           timestamp(6),
+    "updated_by"           varchar(255),
+    "version"              bigint,
+    "description"          varchar(255),
+    "disabled"             boolean default false,
+    "permit"               varchar(255) not null,
+    "cached"               boolean default false,
+    "expandable"           boolean default false,
+    "external_link"        boolean default false,
+    "hidden_in_breadcrumb" boolean default false,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean default false,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("id")
+);
+comment
+on column "permission"."description" is '权限描述';
+comment
+on column "permission"."disabled" is '是否停用';
+comment
+on column "permission"."permit" is '权限标识符';
+comment
+on column "permission"."cached" is '是否支持路由器复用/是否缓存';
+comment
+on column "permission"."expandable" is '是否有子节点/是否可展开';
+comment
+on column "permission"."external_link" is '是否外部链接';
+comment
+on column "permission"."hidden_in_breadcrumb" is '是否在面包屑导航中隐藏';
+comment
+on column "permission"."icon" is '图标';
+comment
+on column "permission"."path" is '请求地址/路由路径/外部链接';
+comment
+on column "permission"."shown_in_menu" is '是否在菜单中显示';
+comment
+on column "permission"."sort" is '排序';
+comment
+on column "permission"."target" is '外部链接打开方式：_blank | _self | _parent | _top';
+comment
+on column "permission"."title" is '页面显示标题/菜单显示标题';
+comment
+on column "permission"."ui_type" is 'UI类型';
+create table "revinfo"
+(
+    "rev"      integer not null,
+    "revtstmp" bigint,
+    primary key ("rev")
+);
+create table "role"
+(
+    "id"          bigint not null,
+    "created_at"  timestamp(6),
+    "created_by"  varchar(255),
+    "updated_at"  timestamp(6),
+    "updated_by"  varchar(255),
+    "version"     bigint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("id")
+);
+comment
+on column "role"."description" is '角色描述';
+comment
+on column "role"."name" is '角色名称';
+create table "tenant"
+(
+    "id"           bigint not null,
+    "created_at"   timestamp(6),
+    "created_by"   varchar(255),
+    "updated_at"   timestamp(6),
+    "updated_by"   varchar(255),
+    "version"      bigint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("id")
+);
+comment
+on column "tenant"."name" is '租户名称/机构名称';
+comment
+on column "tenant"."user_id" is '组织负责人';
+create table "user"
+(
+    "id"            bigint       not null,
+    "created_at"    timestamp(6),
+    "created_by"    varchar(255),
+    "updated_at"    timestamp(6),
+    "updated_by"    varchar(255),
+    "version"       bigint,
+    "email"         varchar(255),
+    "enabled"       boolean default true,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255) not null,
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("id")
+);
+comment
+on column "user"."email" is '邮箱';
+comment
+on column "user"."enabled" is '账号状态是否启用';
+comment
+on column "user"."gender" is '用户性别';
+comment
+on column "user"."mobile" is '手机号码';
+comment
+on column "user"."password_hash" is '登录密码';
+comment
+on column "user"."real_name" is '真实姓名';
+comment
+on column "user"."username" is '用户名/账号名';
+comment
+on column "user"."org_id" is '组织';
+create table "org_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "enabled"     boolean,
+    "landline"    varchar(255),
+    "level"       integer,
+    "name"        varchar(255),
+    "sort"        integer,
+    "parent_id"   bigint,
+    "tenant_id"   bigint,
+    "user_id"     bigint,
+    primary key ("rev", "id")
+);
+create table "permission_aud"
+(
+    "id"                   bigint  not null,
+    "rev"                  integer not null,
+    "revtype"              smallint,
+    "description"          varchar(255),
+    "disabled"             boolean,
+    "permit"               varchar(255),
+    "cached"               boolean,
+    "expandable"           boolean,
+    "external_link"        boolean,
+    "hidden_in_breadcrumb" boolean,
+    "icon"                 varchar(255),
+    "path"                 varchar(255),
+    "shown_in_menu"        boolean,
+    "sort"                 integer,
+    "target"               varchar(255),
+    "title"                varchar(255),
+    "ui_type"              varchar(255),
+    "parent_id"            bigint,
+    primary key ("rev", "id")
+);
+create table "role_aud"
+(
+    "id"          bigint  not null,
+    "rev"         integer not null,
+    "revtype"     smallint,
+    "description" varchar(255),
+    "name"        varchar(255),
+    primary key ("rev", "id")
+);
+create table "role_permission"
+(
+    "role_id"       bigint not null,
+    "permission_id" bigint not null,
+    primary key ("role_id", "permission_id")
+);
+create table "role_permission_aud"
+(
+    "rev"           integer not null,
+    "role_id"       bigint  not null,
+    "permission_id" bigint  not null,
+    "revtype"       smallint,
+    primary key ("rev", "role_id", "permission_id")
+);
+create table "tenant_aud"
+(
+    "id"           bigint  not null,
+    "rev"          integer not null,
+    "revtype"      smallint,
+    "city"         varchar(255),
+    "country"      varchar(255),
+    "county"       varchar(255),
+    "province"     varchar(255),
+    "area_code"    varchar(255),
+    "country_code" varchar(255),
+    "line_number"  varchar(255),
+    "name"         varchar(255),
+    "user_id"      bigint,
+    primary key ("rev", "id")
+);
+create table "user_aud"
+(
+    "id"            bigint  not null,
+    "rev"           integer not null,
+    "revtype"       smallint,
+    "email"         varchar(255),
+    "enabled"       boolean,
+    "gender"        varchar(255),
+    "mobile"        varchar(255),
+    "password_hash" varchar(255),
+    "real_name"     varchar(255),
+    "username"      varchar(255),
+    "org_id"        bigint,
+    primary key ("rev", "id")
+);
+create table "user_role"
+(
+    "user_id" bigint not null,
+    "role_id" bigint not null,
+    primary key ("user_id", "role_id")
+);
+create table "user_role_aud"
+(
+    "rev"     integer not null,
+    "user_id" bigint  not null,
+    "role_id" bigint  not null,
+    "revtype" smallint,
+    primary key ("rev", "user_id", "role_id")
+);
 alter table if exists "permission" add constraint UK_12n0e43hh6pv7prqnhstg6l2d unique ("permit");
 alter table if exists "role" add constraint UK_8sewwnpamngi6b1dwaa88askk unique ("name");
 alter table if exists "tenant" add constraint UK_dcxf3ksi0gyn1tieeq0id96lm unique ("name");
@@ -25755,5 +33139,27 @@ alter table if exists "user_aud" add constraint "FK5rfwf1lb9ib3k5sxootxpq9jt" fo
 alter table if exists "user_role" add constraint "FKka3w3atry4amefp94rblb52n7" foreign key ("role_id") references "role";
 alter table if exists "user_role" add constraint "FKhjx9nk20h4mo745tdqj8t8n9d" foreign key ("user_id") references "user";
 alter table if exists "user_role_aud" add constraint "FKrkljx8onn4lfsy4pcgq3xvq6p" foreign key ("rev") references "revinfo";
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE', '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
-INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile, password_hash, real_name, username, created_by, updated_by, org_id) VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE', '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',
+        '18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,
+                           password_hash, real_name, username, created_by, updated_by, org_id)
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',
+        '18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,;
+password_hash, real_name, username, created_by, updated_by, org_id);
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',;
+'18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,;
+password_hash, real_name, username, created_by, updated_by, org_id);
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',;
+'18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,;
+password_hash, real_name, username, created_by, updated_by, org_id);
+VALUES (0, '2022-10-04 13:43:09.000000', null, null, 'root@famphony.com', true, 'MALE',;
+'18853996892', '{noop}123456', 'SuperRoot', 'root', 0, null, null);
+INSERT INTO public."user" (id, created_at, updated_at, version, email, enabled, gender, mobile,;
+password_hash, real_name, username, created_by, updated_by, org_id);
+VALUES (1, '2022-10-04 13:43:13.000000', null, null, 'chenqingze107@gmail.com', true, 'MALE',;
+'18853996882', '{noop}123456', 'ChenQingze', 'chenqingze', 0, null, null);

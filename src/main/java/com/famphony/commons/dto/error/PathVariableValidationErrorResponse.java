@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.dto.error;
+package com.famphony.commons.dto.error;
 
 import com.famphony.commons.constants.ApiConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;

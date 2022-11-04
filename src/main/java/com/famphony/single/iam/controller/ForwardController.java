@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.controller;
+package com.famphony.single.iam.controller;
 
 import java.util.Locale;
 import org.springframework.stereotype.Controller;

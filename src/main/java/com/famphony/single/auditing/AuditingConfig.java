@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.auditing;
+package com.famphony.single.auditing;
 
 import com.famphony.commons.security.userdetails.SecurityUserDetails;
 import java.util.Optional;

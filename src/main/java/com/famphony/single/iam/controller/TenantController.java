@@ -14,12 +14,11 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.controller;
+package com.famphony.single.iam.controller;
 
-import static com.famphony.single.system.iam.exception.BusinessExceptionCode.TENANT_NOT_FOUND;
-
-import com.famphony.single.system.iam.entity.Tenant;
-import com.famphony.single.system.iam.repository.TenantRepository;
+import com.famphony.single.iam.entity.Tenant;
+import com.famphony.single.iam.exception.BusinessExceptionCode;
+import com.famphony.single.iam.repository.TenantRepository;
 import java.awt.print.Book;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -65,7 +64,8 @@ public class TenantController {
                 .orElseThrow(
                         () ->
                                 new ResponseStatusException(
-                                        HttpStatus.NOT_FOUND, String.format(TENANT_NOT_FOUND.getMsg(), id)));
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(BusinessExceptionCode.TENANT_NOT_FOUND.getMsg(), id)));
     }
 
     /**
@@ -117,7 +117,8 @@ public class TenantController {
                 .orElseThrow(
                         () ->
                                 new ResponseStatusException(
-                                        HttpStatus.NOT_FOUND, String.format(TENANT_NOT_FOUND.getMsg(), id)));
+                                        HttpStatus.NOT_FOUND,
+                                        String.format(BusinessExceptionCode.TENANT_NOT_FOUND.getMsg(), id)));
     }
 
     /**

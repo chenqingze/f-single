@@ -14,16 +14,15 @@
  * the License.
  */
 
-package com.famphony.single.commons.exception;
+package com.famphony.commons.exception;
 
-
-import com.famphony.single.commons.dto.error.HttpErrorStatusResponse;
-import com.famphony.single.commons.dto.error.PathVariableValidationErrorResponse;
-import com.famphony.single.commons.dto.error.ProgressStatusConvertErrorResponse;
-import com.famphony.single.commons.dto.error.ServiceErrorResponse;
-import com.famphony.single.commons.dto.error.ValidationErrorResponse;
-import jakarta.validation.ConstraintViolationException;
+import com.famphony.commons.dto.error.HttpErrorStatusResponse;
+import com.famphony.commons.dto.error.PathVariableValidationErrorResponse;
+import com.famphony.commons.dto.error.ProgressStatusConvertErrorResponse;
+import com.famphony.commons.dto.error.ServiceErrorResponse;
+import com.famphony.commons.dto.error.ValidationErrorResponse;
 import java.util.stream.Collectors;
+import javax.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +60,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<HttpErrorStatusResponse> handleStatusError(ResponseStatusException ex) {
-        var body = new HttpErrorStatusResponse(HttpStatus.resolve(ex.getStatusCode().value()), ex.getReason());
+        var body = new HttpErrorStatusResponse(ex.getStatus(), ex.getReason());
         return ResponseEntity.status(body.getStatus()).body(body);
     }
 

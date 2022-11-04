@@ -7,4 +7,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.system.auditing;
+package com.famphony.single.auditing;

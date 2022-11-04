@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.security.userdetails;
+package com.famphony.commons.security.userdetails;
 
 import java.util.Collection;
 import org.springframework.security.core.CredentialsContainer;

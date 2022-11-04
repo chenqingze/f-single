@@ -5,4 +5,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.commons.security.authentication;
+package com.famphony.commons.security.authentication;

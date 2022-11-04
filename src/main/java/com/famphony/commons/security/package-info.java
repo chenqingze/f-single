@@ -3,4 +3,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.commons.security;
+package com.famphony.commons.security;

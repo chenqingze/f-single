@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.exception;
+package com.famphony.single.iam.exception;
 
 import com.famphony.commons.exception.ExceptionCode;
 import java.util.StringJoiner;

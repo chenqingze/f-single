@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.service.impl;
+package com.famphony.single.iam.service.impl;
 
-import com.famphony.single.system.iam.service.TenantService;
+import com.famphony.single.iam.service.TenantService;
 import org.springframework.stereotype.Service;
 
 /**

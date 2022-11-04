@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.security.authentication;
+package com.famphony.commons.security.authentication;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;

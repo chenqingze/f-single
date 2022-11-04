@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.config;
+package com.famphony.single.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;

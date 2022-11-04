@@ -3,4 +3,4 @@
  *
  * @author ChenQingze
  */
-package com.famphony.single.system.iam.service.provider;
+package com.famphony.single.iam.service.provider;

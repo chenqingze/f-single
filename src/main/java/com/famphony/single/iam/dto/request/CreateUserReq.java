@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.dto.request;
+package com.famphony.single.iam.dto.request;
 
-import com.famphony.single.system.iam.dto.GenderVo;
+import com.famphony.single.iam.dto.GenderVo;
 
 /**
  * @author ChenQingze

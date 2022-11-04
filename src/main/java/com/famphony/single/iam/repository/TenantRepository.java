@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.repository;
+package com.famphony.single.iam.repository;
 
-import com.famphony.single.system.iam.entity.Tenant;
+import com.famphony.single.iam.entity.Tenant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

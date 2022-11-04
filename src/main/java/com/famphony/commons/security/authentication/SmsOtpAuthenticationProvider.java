@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.commons.security.authentication;
+package com.famphony.commons.security.authentication;
 
-import com.famphony.single.commons.security.service.SmsOtpUserDetailsService;
+import com.famphony.commons.security.service.SmsOtpUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

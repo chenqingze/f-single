@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.captcha;
+package com.famphony.commons.captcha;
 
 /**
  * 验证码接口定义.

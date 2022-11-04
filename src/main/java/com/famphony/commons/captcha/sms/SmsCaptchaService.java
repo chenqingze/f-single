@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.captcha.sms;
+package com.famphony.commons.captcha.sms;
 
 /**
  * @author ChenQingze

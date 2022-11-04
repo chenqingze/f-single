@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.constants;
+package com.famphony.commons.constants;
 
 /**
  * @author ChenQingze

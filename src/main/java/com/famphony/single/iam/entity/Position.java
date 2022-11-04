@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.entity;
+package com.famphony.single.iam.entity;
 
 import com.famphony.commons.jpa.BaseEntity;
 

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.security.service;
+package com.famphony.commons.security.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * @author ChenQingze
  */
 public interface EmailOtpUserDetailsService {
+
     boolean consumeEmailCode(String email, String code);
 
     UserDetails loadUserByEmail(String username) throws UsernameNotFoundException;

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.exception;
+package com.famphony.commons.exception;
 
 import java.time.LocalDateTime;
 

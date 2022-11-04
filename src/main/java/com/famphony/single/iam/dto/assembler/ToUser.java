@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.dto.assembler;
+package com.famphony.single.iam.dto.assembler;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

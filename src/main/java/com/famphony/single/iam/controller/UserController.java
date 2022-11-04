@@ -14,13 +14,13 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.controller;
+package com.famphony.single.iam.controller;
 
-import com.famphony.single.system.iam.dto.request.CreateUserReq;
-import com.famphony.single.system.iam.dto.request.UpdateUserPasswordReq;
-import com.famphony.single.system.iam.dto.request.UpdateUserReq;
-import com.famphony.single.system.iam.dto.response.UserResp;
-import com.famphony.single.system.iam.service.UserService;
+import com.famphony.single.iam.dto.request.CreateUserReq;
+import com.famphony.single.iam.dto.request.UpdateUserPasswordReq;
+import com.famphony.single.iam.dto.request.UpdateUserReq;
+import com.famphony.single.iam.dto.response.UserResp;
+import com.famphony.single.iam.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;

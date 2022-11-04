@@ -14,12 +14,12 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.dto.assembler;
+package com.famphony.single.iam.dto.assembler;
 
-import com.famphony.single.system.iam.dto.request.CreateUserReq;
-import com.famphony.single.system.iam.dto.request.UpdateUserReq;
-import com.famphony.single.system.iam.dto.response.UserResp;
-import com.famphony.single.system.iam.entity.User;
+import com.famphony.single.iam.dto.request.CreateUserReq;
+import com.famphony.single.iam.dto.request.UpdateUserReq;
+import com.famphony.single.iam.dto.response.UserResp;
+import com.famphony.single.iam.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

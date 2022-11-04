@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.system.iam.dto.response;
+package com.famphony.single.iam.dto.response;
 
-import com.famphony.single.system.iam.dto.UiConfigVo;
+import com.famphony.single.iam.dto.UiConfigVo;
 
 /**
  * @author ChenQingze

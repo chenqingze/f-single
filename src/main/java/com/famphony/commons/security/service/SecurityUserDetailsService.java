@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.famphony.single.commons.security.service;
+package com.famphony.commons.security.service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
