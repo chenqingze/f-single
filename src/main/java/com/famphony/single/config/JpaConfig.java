@@ -28,6 +28,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@EntityScan("com.famphony.single.system.iam.entity")
-@EnableJpaRepositories(basePackages = {"com.famphony.single.system.iam.repository"})
+@EntityScan("com.famphony.single.iam.entity")
+@EnableJpaRepositories(basePackages = {"com.famphony.single.iam.repository"})
 public class JpaConfig {}

@@ -1,10 +1,21 @@
+buildscript {
+    ext {
+        springBootVersion = '2.7.5'
+        springDependencyManagementVersion = '1.0.15.RELEASE'
+        hibernateEnversVersion = '5.6.12.Final'
+        querydslVersion = '5.0.0'
+        spotlessVersion = '6.11.0'
+        mapstructVersion = '1.5.3.Final'
+        nanocaptchaVersion = '1.3'
+    }
+}
 plugins {
     id 'java'
     id 'idea'
     id 'checkstyle'
-    id 'org.springframework.boot' version '2.7.5'
-    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id "com.diffplug.spotless" version "6.11.0"
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+    id "com.diffplug.spotless" version "${spotlessVersion}"
 }
 
 group = 'com.famphony'
@@ -17,13 +28,6 @@ configurations {
     }
 }
 
-ext {
-    springBootVersion = '2.7.5'
-    springDependencyManagementVersion = '1.0.15.RELEASE'
-    hibernateEnversVersion = '5.6.12.Final'
-    mapstructVersion = '1.5.3.Final'
-    nanocaptchaVersion = '1.3'
-}
 
 repositories {
     mavenLocal()
@@ -33,6 +37,7 @@ repositories {
 }
 
 dependencies {
+    // spring
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -43,21 +48,28 @@ dependencies {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
         }
     }
-    implementation "org.hibernate:hibernate-envers:${hibernateEnversVersion}"
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation "net.logicsquad:nanocaptcha:${nanocaptchaVersion}"
-
-    runtimeOnly 'org.postgresql:postgresql'
-
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    // hibernate envers
+    implementation "org.hibernate:hibernate-envers"
+    // querydsl
+    implementation "com.querydsl:querydsl-jpa"
+    implementation "com.querydsl:querydsl-collections"
+    annotationProcessor "com.querydsl:querydsl-apt::jpa"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    // This prevents java.lang.NoClassDefFoundError
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    // This prevents java.lang.NoClassDefFoundError
+    // mapstruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    // nanocaptcha todo:后面如果没有需求就干掉他，用手机或email二次验证即可
+    implementation "net.logicsquad:nanocaptcha:${nanocaptchaVersion}"
 
+    runtimeOnly 'org.postgresql:postgresql'
 }
 
 
@@ -66,6 +78,10 @@ dependencies {
 //  mapstruct  //
 /////////////////
 tasks.withType(JavaCompile) {
+    // config Querydsl generation
+    // if you wanna replace Qclass with a specific directory,config here
+
+    // config mappstruct generation
     options.compilerArgs = [
             '-Amapstruct.suppressGeneratorTimestamp=true',
             '-Amapstruct.suppressGeneratorVersionInfoComment=true',
@@ -83,6 +99,21 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+///////////////////////
+// config sourceSets //
+///////////////////////
+sourceSets {
+    // if you special a directory for generate class then Add QClass and mapstruct file path to the java source set
+    //main.java.srcDirs += [ 'somePath' ]
+}
+
+///////////
+// clean //
+///////////
+clean {
+    // Remove QClass directory when doing `gradle clean`
+    //delete file(generated Path)
+}
 
 ////////////
 // Format //
