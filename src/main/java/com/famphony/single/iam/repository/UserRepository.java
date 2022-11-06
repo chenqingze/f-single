@@ -19,11 +19,12 @@ package com.famphony.single.iam.repository;
 import com.famphony.single.iam.entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /**
  * @author ChenQingze
  */
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredicateExecutor<User> {
 
     Optional<User> findByUsernameOrMobileOrEmail(String username, String mobile, String email);
 

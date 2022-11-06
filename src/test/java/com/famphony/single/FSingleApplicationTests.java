@@ -16,12 +16,36 @@
 
 package com.famphony.single;
 
+import com.famphony.single.iam.entity.QUser;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class FSingleApplicationTests {
 
+    @Autowired JPAQueryFactory query;
+
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        System.out.println("=================>" + "contextLoads");
+    }
+
+    @Test
+    void executeFindMethod() {
+        System.out.println("=================>" + "executeFindMethod");
+
+        QUser user = QUser.user;
+        List<Tuple> result =
+                query.select(user.id, user.username, user.realName, user.email).from(user).fetch();
+        System.out.println("=================>" + result);
+        for (Tuple row : result) {
+            System.out.println("realName " + row.get(user.realName));
+            System.out.println("email " + row.get(user.email));
+            System.out.println("mobile " + row.get(user.mobile));
+        }
+    }
 }
