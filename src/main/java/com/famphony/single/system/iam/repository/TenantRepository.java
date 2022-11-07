@@ -14,22 +14,17 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.repository;
+
+import com.famphony.single.system.iam.entity.Tenant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
+public interface TenantRepository extends JpaRepository<Tenant, Long> {
 
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
+    Page<Tenant> findByName(String name, Pageable pageable);
 }

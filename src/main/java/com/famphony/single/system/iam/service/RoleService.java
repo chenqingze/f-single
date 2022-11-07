@@ -14,22 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.service;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+public interface RoleService {}

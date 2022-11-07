@@ -57,7 +57,7 @@ read（查询）操作不需要调用domain layer。application layer 的 servic
 1. 尽量使用延迟加载。
 2. @ManyToMany 多对多关系中不要使用及联删除，CascadeTypes.REMOVE and CascadeTypes.ALL(includes
    REMOVE)
-3. 查询时使用DTO（DTO projection）投影进行查询，效率高于实体投影（entity projection)，当然结果集也使用DTO映射
+3. 查询时使用DTO（DTO projection）投影进行查询，效率高于实体投影（entity projection)，当然结果集也使用DTO映射,也可以使用动态投影。
    [参考](https://thorben-janssen.com/result-set-mapping-constructor-result-mappings/)
    [参考](https://thorben-janssen.com/spring-data-jpa-query-projections/)
 

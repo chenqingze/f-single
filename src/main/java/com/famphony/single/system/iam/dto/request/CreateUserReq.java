@@ -14,22 +14,18 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.dto.request;
+
+import com.famphony.single.system.iam.dto.GenderVo;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+public record CreateUserReq(
+        String username,
+        String password,
+        String email,
+        String mobile,
+        String realName,
+        GenderVo gender,
+        boolean enabled) {}

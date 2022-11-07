@@ -16,7 +16,7 @@
 
 package com.famphony.commons.jpa;
 
-import static com.famphony.single.iam.exception.BusinessExceptionCode.ENTITY_NOT_FOUND;
+import static com.famphony.single.system.iam.exception.BusinessExceptionCode.ENTITY_NOT_FOUND;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

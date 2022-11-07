@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2022 ChenQingze . All Rights Reserved.
+ * Copyright (c) 2022 ChenQingze.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,22 +14,9 @@
  * the License.
  */
 
-package com.famphony.single.config;
-
 /**
+ * DTO对象组装器,转换查询结果对象
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+package com.famphony.single.system.iam.dto.assembler;

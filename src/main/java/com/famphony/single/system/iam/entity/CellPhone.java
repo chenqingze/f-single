@@ -14,22 +14,34 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.entity;
+
+import java.io.Serializable;
 
 /**
+ * 移动手机.
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
+public class CellPhone implements Serializable {
 
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
+    private String countryCode;
 
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
+    private String networkCode;
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getNetworkCode() {
+        return networkCode;
+    }
+
+    public void setNetworkCode(String networkCode) {
+        this.networkCode = networkCode;
+    }
 }

@@ -14,22 +14,20 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.entity;
+
+import com.famphony.commons.jpa.BaseEntity;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Comment;
 
 /**
+ * todo:实现用户组逻辑 用户组:主要用于方便管理授权，公司不大人员不是非常超级多的时候用不到 可以把部门看作一个用户组.
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
+@Entity
+public class Group extends BaseEntity {
 
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
+    @Comment("用户组名称")
+    private String name;
 }

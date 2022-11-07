@@ -14,22 +14,17 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.dto.response;
+
+import com.famphony.single.system.iam.dto.UiConfigVo;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+public record PermissionResp(
+        long id,
+        String permit,
+        String description,
+        boolean disabled,
+        PermissionResp parent,
+        UiConfigVo uiConfig) {}

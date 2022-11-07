@@ -14,22 +14,25 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.controller;
+
+import java.security.Principal;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * 认证信息控制器.
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
+@RestController
+public class AuthController {
 
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
+    @GetMapping("/me")
+    @ResponseStatus(HttpStatus.OK)
+    public Principal self(Principal user) {
+        return user;
+    }
 }

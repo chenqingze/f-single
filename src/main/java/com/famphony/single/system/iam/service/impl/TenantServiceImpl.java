@@ -14,22 +14,13 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.service.impl;
+
+import com.famphony.single.system.iam.service.TenantService;
+import org.springframework.stereotype.Service;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+@Service
+public class TenantServiceImpl implements TenantService {}

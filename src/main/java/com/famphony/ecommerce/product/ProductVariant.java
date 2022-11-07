@@ -14,22 +14,11 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.ecommerce.product;
 
 /**
+ * ProductVariant 为 Product 的单品或SKU，包含了单品特定样式信息和价格、重量、体积等，一个 Product 可以包含多个 ProductVariant
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+public class ProductVariant {}

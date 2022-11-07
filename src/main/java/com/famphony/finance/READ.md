@@ -1,0 +1,1 @@
+不需要开发这个业务，过于专业过于耗时。直接引入第三方系统，比如用友、金蝶等。应付账款和应收帐款，对账等等，accounts payable (AP) and accounts receivable (AR) 

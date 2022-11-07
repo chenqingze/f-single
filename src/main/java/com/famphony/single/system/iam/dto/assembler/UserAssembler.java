@@ -14,22 +14,28 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.dto.assembler;
+
+import com.famphony.single.system.iam.dto.request.CreateUserReq;
+import com.famphony.single.system.iam.dto.request.UpdateUserReq;
+import com.famphony.single.system.iam.dto.response.UserResp;
+import com.famphony.single.system.iam.entity.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
+@Mapper
+public interface UserAssembler {
 
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
+    UserAssembler INSTANCE = Mappers.getMapper(UserAssembler.class);
 
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
+    UserResp userToUserResp(User user);
+
+    @ToUser
+    User createUserReqToUser(CreateUserReq createUserReq);
+
+    @ToUser
+    User updateUserReqToUser(UpdateUserReq updateUserReq);
 }

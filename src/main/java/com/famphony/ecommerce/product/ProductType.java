@@ -14,22 +14,11 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.ecommerce.product;
 
 /**
+ * 产品类型: Site Access,Downloadable,Shippable,etc.
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+public class ProductType {}

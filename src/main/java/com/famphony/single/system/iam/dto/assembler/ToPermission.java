@@ -14,22 +14,16 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.dto.assembler;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import org.mapstruct.Mapping;
 
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+@Retention(RetentionPolicy.CLASS)
+@Mapping(target = "id", ignore = true)
+@Mapping(target = "parent", ignore = true)
+public @interface ToPermission {}

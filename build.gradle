@@ -4,8 +4,9 @@ buildscript {
         springDependencyManagementVersion = '1.0.15.RELEASE'
         hibernateEnversVersion = '5.6.12.Final'
         querydslVersion = '5.0.0'
-        spotlessVersion = '6.11.0'
         mapstructVersion = '1.5.3.Final'
+        spotlessVersion = '6.11.0'
+        checkstyleToolVersion = '10.3.3'
         nanocaptchaVersion = '1.3'
     }
 }
@@ -151,11 +152,8 @@ spotless {
 //Checkstyle//
 /////////////
 checkstyle {
-	toolVersion = '10.3.3'
+	toolVersion = "${checkstyleToolVersion}"
 	// checkstyle配置文件默认路径 ${project.rootDir}/config/checkstyle/checkstyle.xml也可指定其他路径
 	// configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
 }
-
-
-
 /*构建参数配置end*/

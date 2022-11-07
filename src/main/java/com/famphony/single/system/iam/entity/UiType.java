@@ -14,22 +14,18 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.entity;
 
 /**
+ * 许可级别
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
+public enum UiType {
+    /** 功能模块. */
+    MODULE,
+    /** 页面. */
+    PAGE,
+    /** 页面元素：button、slider etc. */
+    ELEMENT
 }

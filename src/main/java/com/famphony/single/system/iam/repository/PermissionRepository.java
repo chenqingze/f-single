@@ -14,22 +14,16 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.repository;
+
+import com.famphony.single.system.iam.entity.Permission;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
+public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
+    List<Permission> findPermissionsByParentId(Long id);
 }

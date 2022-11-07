@@ -14,22 +14,13 @@
  * the License.
  */
 
-package com.famphony.single.config;
+package com.famphony.single.system.iam.entity;
 
 /**
+ * 租户认证信息.
+ *
+ * <p>需要人工审核认证.
+ *
  * @author ChenQingze
  */
-// @Configuration
-// @EnableRedisHttpSession
-public class HttpSessionConfig {
-
-    //    @Bean
-    //    public HttpSessionIdResolver httpSessionIdResolver() {
-    //        return HeaderHttpSessionIdResolver.xAuthToken();
-    //    }
-
-    //    @Bean
-    //    public HttpSessionEventPublisher httpSessionEventPublisher() {
-    //        return new HttpSessionEventPublisher();
-    //    }
-}
+public class TenantCertification {}
